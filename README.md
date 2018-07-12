@@ -127,14 +127,32 @@
     ```
 
 - `ffmpeg -i all.ts -codec copy -y output.mp4`
-    ```sh
-    ls -v *.ts | grep "[0-9]" | xargs cat > all.ts
-    ```
+    - all.ts
+        
+        ```sh
+        ls -v *.ts | grep "[0-9]" | xargs cat > all.ts
+        cat index.m3u8 | grep ".ts" | xargs cat > all.ts
+        ```
+    - 优点
+        - 可 **兼容异常** 音视频 ts 片数据
+    - 缺点
+        - 阿里云文件服务中，出现文件刚创建时，使用 `ls` 无法获取所有文件的异常
 
 - `ffmpeg -f concat -safe 0 -i list -codec copy -y output.mp4`
-    ```sh
-    cat index.m3u8 | grep ".ts" | awk '{printf "file %s\n", $0}' > list        
-    ```
+    - list
+
+        ```sh
+        cat index.m3u8 | grep ".ts" | awk '{printf "file %s\n", $0}' > list 
+        ```
+    - 缺点
+
+        ```sh
+        转换时间
+            相较 all.ts 方式，降低了一倍左右
+        转换兼容性
+            相较 all.ts 存在部分无法正常转换异常
+            如若 `ffprobe -i 0.ts` 时报 `0.ts: Invalid data found when processing input` 导致无法正常转换
+        ```
 
 # 比较
 
